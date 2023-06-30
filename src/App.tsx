@@ -1,4 +1,4 @@
-import { useQuery } from "react-query";
+import { QueryFunction, useQuery } from "react-query";
 
 interface Post {
   body: string;
@@ -14,38 +14,42 @@ interface Todo {
   completed: boolean;
 }
 
-function App() {
-  const postsData = useQuery<Post[]>(["posts"], async ({ signal }) => {
-    const data: Post[] = await fetch(
-      "https://jsonplaceholder.typicode.com/posts",
-      {
-        signal,
-      }
-    ).then((res) => res.json());
-    // SHUFFLE DATa
-    const arr: Post[] = [];
-    while (data.length > 0) {
-      const random = Math.floor(Math.random() * data.length);
-      arr.push(data.splice(random, 1)[0]);
+const getPosts: QueryFunction<Post[]> = async ({ signal }) => {
+  const data: Post[] = await fetch(
+    "https://jsonplaceholder.typicode.com/posts",
+    {
+      signal,
     }
-    return arr;
-  });
+  ).then((res) => res.json());
+  // SHUFFLE DATa
+  const arr: Post[] = [];
+  while (data.length > 0) {
+    const random = Math.floor(Math.random() * data.length);
+    arr.push(data.splice(random, 1)[0]);
+  }
+  return arr;
+};
 
-  const todosData = useQuery<Todo[]>(["todos"], async ({ signal }) => {
-    const data: Todo[] = await fetch(
-      "https://jsonplaceholder.typicode.com/todos",
-      {
-        signal,
-      }
-    ).then((res) => res.json());
-    // SHUFFLE DATa
-    const arr: Todo[] = [];
-    while (data.length > 0) {
-      const random = Math.floor(Math.random() * data.length);
-      arr.push(data.splice(random, 1)[0]);
+const getTodos: QueryFunction<Todo[]> = async ({ signal }) => {
+  const data: Todo[] = await fetch(
+    "https://jsonplaceholder.typicode.com/todos",
+    {
+      signal,
     }
-    return arr;
-  });
+  ).then((res) => res.json());
+  // SHUFFLE DATa
+  const arr: Todo[] = [];
+  while (data.length > 0) {
+    const random = Math.floor(Math.random() * data.length);
+    arr.push(data.splice(random, 1)[0]);
+  }
+  return arr;
+};
+
+function App() {
+  const postsData = useQuery<Post[]>(["posts"], getPosts);
+
+  const todosData = useQuery<Todo[]>(["todos"], getTodos);
 
   function refetchData(type: "posts" | "todos") {
     if (type === "posts") return postsData.refetch();
