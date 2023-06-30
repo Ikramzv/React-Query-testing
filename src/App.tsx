@@ -1,10 +1,10 @@
-import { QueryFunction, useQuery } from "react-query";
+import { QueryFunction, useQueries } from "react-query";
 
 interface Post {
   body: string;
   id: number;
   title: string;
-  userId: string;
+  userId: number;
 }
 
 interface Todo {
@@ -47,14 +47,18 @@ const getTodos: QueryFunction<Todo[]> = async ({ signal }) => {
 };
 
 function App() {
-  const postsData = useQuery<Post[]>({
-    queryKey: ["posts"],
-    queryFn: getPosts,
-  });
-  const todosData = useQuery<Todo[]>({
-    queryKey: ["todos"],
-    queryFn: getTodos,
-  });
+  const [postsData, todosData] = useQueries([
+    {
+      queryKey: ["posts"],
+      queryFn: getPosts,
+    },
+    {
+      queryKey: ["todos"],
+      queryFn: getTodos,
+    },
+  ]);
+
+  console.log(postsData, todosData);
 
   function refetchData(type: "posts" | "todos") {
     if (type === "posts") return postsData.refetch();
