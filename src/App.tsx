@@ -47,9 +47,14 @@ const getTodos: QueryFunction<Todo[]> = async ({ signal }) => {
 };
 
 function App() {
-  const postsData = useQuery<Post[]>(["posts"], getPosts);
-
-  const todosData = useQuery<Todo[]>(["todos"], getTodos);
+  const postsData = useQuery<Post[]>({
+    queryKey: ["posts"],
+    queryFn: getPosts,
+  });
+  const todosData = useQuery<Todo[]>({
+    queryKey: ["todos"],
+    queryFn: getTodos,
+  });
 
   function refetchData(type: "posts" | "todos") {
     if (type === "posts") return postsData.refetch();
